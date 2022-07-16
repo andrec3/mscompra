@@ -2,6 +2,7 @@ package com.cruzandre.mscompra.service;
 
 import com.cruzandre.mscompra.model.Pedido;
 import com.cruzandre.mscompra.repository.PedidoRepository;
+import com.cruzandre.mscompra.service.rabbitmq.Producer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,9 +10,14 @@ import org.springframework.stereotype.Service;
 public class PedidoService {
 
     @Autowired
-    PedidoRepository pedidoRepository;
+    private PedidoRepository pedidoRepository;
+
+    @Autowired
+    private Producer producer;
 
     public Pedido salvar(Pedido pedido){
-        return pedidoRepository.save(pedido);
+        pedido = pedidoRepository.save(pedido);
+        producer.enviarPedido(pedido.toString());
+        return pedido;
     }
 }
